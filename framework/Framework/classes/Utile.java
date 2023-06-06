@@ -1,5 +1,5 @@
 package utils;
-import etu2003.framework.Mapping;
+import etu2004.framework.Mapping;
 
 import java.lang.reflect.*;
 import java.util.*;
