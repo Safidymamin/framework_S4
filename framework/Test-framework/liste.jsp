@@ -1,5 +1,10 @@
+<%--
+    Document   : liste
+    Created on : Mar 22, 2023, 10:41:47 AM
+    Author     : fabien
+--%>
 
-<!-- <%@page contentType="text/html" pageEncoding="UTF-8"%> -->
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -7,6 +12,6 @@
         <title>JSP Page</title>
     </head>
     <body>
-        <h1>Sprint </h1>
+        <h1>Sprint 5!</h1>
     </body>
 </html>
