@@ -5,15 +5,23 @@
 package etu2003.framework.servlet;
 
 import etu2003.framework.Mapping;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.lang.model.element.Element;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.swing.text.Document;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 import utils.Utile;
 
 /**
@@ -34,10 +42,24 @@ public class FrontServlet extends HttpServlet {
     @Override
     public void init()throws ServletException{
         try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+
+            String path = getServletContext().getRealPath("/WEB-INF/config.xml");
+            File configFile = new File(path);
+            Document document = (Document) builder.parse(configFile);
+            NodeList nodeList = document.getElementsByTagName("packe");
+            Element element = (Element) nodeList.item(0);
+            String packageName = element.getElementsByTagName("package-listening").item(0).getTextContent();
+
             this.setMappingUrls(Utile.getAllHashMap("test"));
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(FrontServlet.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
+            Logger.getLogger(FrontServlet.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ParserConfigurationException ex) {
+            Logger.getLogger(FrontServlet.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SAXException ex) {
             Logger.getLogger(FrontServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
