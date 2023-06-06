@@ -18,8 +18,8 @@ import java.util.*;
  */
 public class Utile {
     
-    public static HashMap<String, Mapping> getAllHashMap(String packageName) throws ClassNotFoundException, UnsupportedEncodingException, IOException {
-        System.out.println("io");
+    public static HashMap<String, Mapping> getAllHashMap(String packageName) throws ClassNotFoundException, UnsupportedEncodingException, IOException, SAXException, ParserConfigurationException {
+       
         HashMap<String, Mapping> hash = new HashMap<>();
      
         List<Class<?>> classes = obtenirClasses(packageName);
@@ -27,10 +27,9 @@ public class Utile {
             System.out.println("Class: " + cls.getName());
             Method[] methods = cls.getDeclaredMethods();
             for (Method method : methods) {
-               //System.out.println("Method: " + method.getName());
                if(method.getDeclaredAnnotation(Annotation.class)!=null){
                     Annotation annotation = method.getDeclaredAnnotation(Annotation.class);
-                    if(annotation.url() != ""){
+                    if(!"".equals(annotation.url())){
                         String url = annotation.url();
                         String classname = cls.getSimpleName();
                         String nommethod = method.getName();
@@ -43,8 +42,7 @@ public class Utile {
         //}
         return hash;
     }
-    
-    
+
     public static List<Class<?>> obtenirClasses(String packageName) throws ClassNotFoundException, IOException {
         List<Class<?>> classes = new ArrayList<>();
         String path = packageName.replace('.', '/');
@@ -66,7 +64,6 @@ public class Utile {
             }
         }
         return classes;
-    }
-    
+    } 
     
 }
