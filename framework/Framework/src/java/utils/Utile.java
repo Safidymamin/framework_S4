@@ -1,5 +1,5 @@
 package utils;
-import etu2003.framework.Mapping;
+import etu2004.framework.Mapping;
 
 import java.lang.reflect.*;
 import java.util.*;
@@ -16,7 +16,7 @@ import org.xml.sax.SAXException;
 
 /**
  *
- * @author fabien
+ * @author KM
  */
 public class Utile {
     
