@@ -21,6 +21,10 @@
                       https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd"
   version="5.0"
   metadata-complete="true">
+   <context-param>
+      <param-name>packageName</param-name>
+      <param-value>objet</param-value>
+    </context-param>
     <servlet>
         <servlet-name>MyServlet</servlet-name>
         <servlet-class>etu2003.framework.servlet.FrontServlet</servlet-class>
