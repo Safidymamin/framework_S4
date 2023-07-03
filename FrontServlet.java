@@ -3,7 +3,11 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.HashMap;
+import etu2003.framework.Mapping;
 public class FrontServlet extends HttpServlet{
+    HashMap<String, Mapping> mappings = new HashMap();
 
     public void init() throws ServletException {
         System.out.println("FrontServlet: init");
