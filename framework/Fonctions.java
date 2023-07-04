@@ -21,6 +21,36 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 public class Fonctions{
+    // SPRINT 7: Recuperation données formulaire
+    public static Object recuperationInputData(Object object, HttpServletRequest request, HttpServletResponse response) throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException,InvocationTargetException, IOException{
+        PrintWriter out = response.getWriter();
+        Field[] fields = object.getClass().getDeclaredFields();
+        Enumeration<String> paramNames = request.getParameterNames();
+        while (paramNames.hasMoreElements()) {
+            String paramName = paramNames.nextElement();
+            for (int i = 0; i < fields.length; i++) {
+                Field field = fields[i];
+                if (field.getName().equals(paramName)) {
+                    String methodName = "set" + capitalizeFirstLetter(field.getName());
+                    Method method = object.getClass().getMethod(methodName, field.getType());
+                    Object paramValue = request.getParameter(paramName);
+                    method.invoke(object, paramValue);
+                }
+            }
+        }
+          Field[] newFields = object.getClass().getDeclaredFields();
+        for (Field field : newFields) {
+            field.setAccessible(true);
+            String cle = field.getName();
+            Object valeur = field.get(object);
+            if (request.getAttribute(cle) == null) {
+                request.setAttribute(cle, valeur);
+            }
+        }
+        request.setAttribute((String)object.getClass().getName(), object);
+        return object;
+    }
+    
 
 
     // SPRINT 6: maka donnée anle modelView ho dispatchena
@@ -30,6 +60,9 @@ public class Fonctions{
             String key = entry.getKey();
             Object valeurObjet = entry.getValue();
             request.setAttribute(key, (Object)valeurObjet);
+            if (request.getAttribute(key) == null) {
+                request.setAttribute(key, (Object)valeurObjet);
+            }
         }
     }
 
@@ -96,4 +129,32 @@ public class Fonctions{
         }
            return mappingUrls;
     }
+
+    
+    public static String capitalizeFirstLetter(String mot){
+        if(mot == null || mot.isEmpty()) return mot;
+        else{
+            char firstChar = Character.toUpperCase(mot.charAt(0));
+            return firstChar + mot.substring(1);
+        }
+    }
+
+    public static Object getMyObject(HashMap<String, Mapping> mappingUrls, HttpServletRequest request, HttpServletResponse response) throws ClassNotFoundException, InstantiationException, IllegalAccessException{
+        Object object = new Object();
+
+        String stringUri = request.getRequestURI();
+        String[] arrayPath = stringUri.split("/");
+        String cleUrl = arrayPath[arrayPath.length - 1];
+
+        for(String keyMethod : mappingUrls.keySet()){
+            Mapping mapping = mappingUrls.get(keyMethod);
+            if (cleUrl.equals(keyMethod)) {
+                Class<?> myClass = Class.forName(mapping.getClassName());
+                object = myClass.newInstance();
+            }
+        }
+
+        return object;
+    }
+
 }
