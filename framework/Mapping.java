@@ -1,5 +1,6 @@
 package etu2003.framework;
-public class Mapping {
+
+public class Mapping{
     String className;
     String method;
 
@@ -7,4 +8,5 @@ public class Mapping {
         this.className = className;
         this.method = method;
     }
+
 }

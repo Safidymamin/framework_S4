@@ -1,0 +1,17 @@
+
+sprint1: 
+    creation FrontServlet
+    pointage url vers FrontServlet
+
+sprint2: 
+    Creation Mapping(String className, String method)
+    HashMap<string, Mapping> dans FrontServlet
+
+sprint3:
+    Creation annotation 'url'
+    Ajout de url dans une methode de classe Emp
+    Mameno HashMap tao amle FrontServlet : < j'ai créé une classe Utile pour mettre la fonction pour que le code dans FrontServlet paraisse moin long, et ajouté le nom du package de model dans web.xml
+
+sprint4:
+    division en Framework et test-framework
+    build.bat
