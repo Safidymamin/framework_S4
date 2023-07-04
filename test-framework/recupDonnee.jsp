@@ -1,3 +1,8 @@
+<%
+    String nom = (String) request.getAttribute("nom");
+    String prenom = (String) request.getAttribute("prenom");
+%>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,9 +12,7 @@
     <title>Document</title>
 </head>
 <body>
-    <h2>Index</h2>
-    <form action="servlet/emp-recupDonnee">
-        Sprint 6: <input type="submit" value="Show Data">
-    </form>
+    <h2>Sprint 6: Recuperation de donnees</h2>
+    <p>Bienvenue, <%= nom %> <%= prenom %></p>
 </body>
 </html>
