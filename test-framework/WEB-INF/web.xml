@@ -29,7 +29,7 @@
 
     <servlet-mapping>
         <servlet-name>FrontServlet</servlet-name>
-        <url-pattern>/</url-pattern>
+        <url-pattern>/servlet/*</url-pattern>
     </servlet-mapping>
 
     <context-param>

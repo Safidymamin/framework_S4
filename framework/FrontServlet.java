@@ -6,13 +6,12 @@ import etu2003.annotation.url;
 
 import java.lang.reflect.Method;
 import java.net.URL;
-import java.util.*;
-import java.io.*;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 
-import jakarta.servlet.ServletException;
+import java.io.*;
+import java.util.*;
+
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 
 public class FrontServlet extends HttpServlet{
 
@@ -22,18 +21,24 @@ public class FrontServlet extends HttpServlet{
         
         try {
             String packageName = getServletContext().getInitParameter("packageName");
-            
-            // sprint3
-            Fonctions.mameno_HashMap(mappingUrls, packageName);
-        
+// sprint3
+            mappingUrls = Fonctions.mameno_HashMap(mappingUrls, packageName);
         } catch (Exception e) {
             throw new ServletException(e);
         }
     }
 
-    
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("text/html;charset=UTF-8");
+// sprint5
+        ModelView modelView = Fonctions.recup_ModelView(mappingUrls, request, response);
+        RequestDispatcher requestDispatcher = request.getRequestDispatcher("/"+modelView.getUrl());
+        requestDispatcher.forward(request, response);
+        
+    }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        processRequest(request, response);
         PrintWriter out = response.getWriter();
         String packageName = getServletContext().getInitParameter("packageName");
         URL root = Thread.currentThread().getContextClassLoader().getResource(packageName.replace(".", "//")); 
@@ -43,6 +48,7 @@ public class FrontServlet extends HttpServlet{
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        processRequest(request, response);
         
         
     }
