@@ -22,7 +22,7 @@ public class ModelView{
     public String getUrl(){
         return this.url;
     }
-        public HashMap<String,Object> getData(){
+    public HashMap<String,Object> getData(){
         return this.data;
     }
     public void setData(HashMap<String,Object> data){
