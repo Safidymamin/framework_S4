@@ -1,4 +1,5 @@
 package models;
+
 import etu2003.annotation.url;
 import etu2003.framework.servlet.ModelView;
 
@@ -7,6 +8,19 @@ public class Emp{
     String prenom;
 
     public Emp(){
+    }
+
+    // sprint8: parametre fonction
+    @url(value="emp-parametre")
+    public ModelView getBoucle(int arg0){
+        ModelView modelView = new ModelView();
+        String nbr = "0";
+        for(int i=1; i<arg0 ; i++){
+            nbr = nbr +"-"+String.valueOf(i);
+        }
+        modelView.addItem("boucle",nbr);
+        modelView.setUrl("parametre.jsp");
+        return modelView;
     }
 
     // sprint7: maka donnée formulaire atao anaty Classe

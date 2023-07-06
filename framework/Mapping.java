@@ -8,14 +8,15 @@ public class Mapping{
         this.className = className;
         this.method = method;
     }
-
-    public String getClassName() {
-        return this.className;
+    public Mapping() {
     }
+
     public String getMethod(){
         return this.method;
     }
 
-    public Mapping(){}
+    public String getClassName(){
+        return this.className;
+    }
 
 }
