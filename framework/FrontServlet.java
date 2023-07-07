@@ -25,12 +25,14 @@ import jakarta.servlet.annotation.MultipartConfig;
 public class FrontServlet extends HttpServlet{
 
     HashMap<String, Mapping> mappingUrls;
+    HashMap<String, Object> singleton;
 
     public void init() throws ServletException {
         
         try {
             String packageName = getServletContext().getInitParameter("packageName");
 // sprint3
+            singleton = Fonctions.recuperationSingleton(singleton, packageName);
             mappingUrls = Fonctions.mameno_HashMap(mappingUrls, packageName);
         } catch (Exception e) {
             throw new ServletException(e);
@@ -41,18 +43,19 @@ public class FrontServlet extends HttpServlet{
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
 
-// sprint5
-        ModelView modelView = Fonctions.recup_ModelView(mappingUrls, request, response);
+// sprint5 ; 10
+        ModelView modelView = Fonctions.recup_ModelView(mappingUrls, singleton, request, response);
+
 // sprint6: request.setAttribute(key, (Object)valeurObjet);
         Fonctions.recuperationData(modelView, request, response);
         
         
         
         try {
-            Object myObject = Fonctions.getMyObject(mappingUrls, request, response);
-            // sprint 9: maka file
+                      Object myObject = Fonctions.getMyObject(mappingUrls, singleton, request, response);
+// sprint 9: maka file
             myObject = Fonctions.recuperationFileData(myObject, request, response);
-            // sprint 7: maka données formulaire
+          // sprint 7: maka données formulaire
             myObject = Fonctions.recuperationInputData(myObject, request, response);
             afficherDetailClass(myObject, out); 
 
@@ -71,6 +74,14 @@ public class FrontServlet extends HttpServlet{
             out.println("<br>"); 
             out.println("Cle: " + key + ", ClassName: "+ mapping.getClassName() + ", Mapping: " + mapping.getMethod());
         }
+          out.println("<br>");
+        out.println("Singleton size: "+ singleton.size());
+        for (String key : singleton.keySet()) {
+            out.println("<br>");
+            out.println("Cle : " + key);
+        }
+        // SPRINT-10:        
+        Fonctions.resetObjectsToDefault(singleton);
 
         RequestDispatcher requestDispatcher = request.getRequestDispatcher("/"+modelView.getUrl());
         requestDispatcher.forward(request, response);
