@@ -4,6 +4,7 @@ import etu2003.framework.Mapping;
 import etu2003.framework.FileUpload;
 import etu2003.framework.servlet.ModelView;
 import etu2003.annotation.url;
+import etu2003.annotation.Scope;
 
 import java.net.URL;
 
@@ -17,12 +18,88 @@ import jakarta.servlet.annotation.*;
 
 public class Fonctions{
 
+// SPRINT-10: singleton sa tsia
+    public static void resetObjectsToDefault(HashMap<String, Object> hashMap) {
+        for (Map.Entry<String, Object> entry : hashMap.entrySet()) {
+            Object object = entry.getValue();
+            resetFields(object);
+        }
+    }
+    public static void resetFields(Object object) {
+        Class<?> clazz = object.getClass();
+
+        while (clazz != null) {
+            Field[] fields = clazz.getDeclaredFields();
+
+            for (Field field : fields) {
+                field.setAccessible(true);
+
+                try {
+                    // Remet le champ à sa valeur par défaut en fonction de son type
+                    field.set(object, getDefaultValue(field.getType()));
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            clazz = clazz.getSuperclass();
+        }
+    }
+    private static Object getDefaultValue(Class<?> type) {
+        if (type.isPrimitive()) {
+            if (type == boolean.class) {
+                return false;
+            } else if (type == byte.class || type == short.class || type == int.class || type == long.class) {
+                return 0;
+            } else if (type == float.class || type == double.class) {
+                return 0.0;
+            } else if (type == char.class) {
+                return '\u0000';
+            } else if (type == FileUpload.class) {
+                return new FileUpload();
+            }
+        }
+
+        return null;
+    }
+    public static HashMap<String, Object> recuperationSingleton(HashMap<String, Object> singleton, String packageName){
+        singleton = new HashMap<String, Object>();
+        // Obtenez le nom du répertoire correspondant au package
+        String packagePath = packageName.replace('.', '/');
+        try {
+            // Obtenez tous les fichiers dans le package
+            URL packageURL = Thread.currentThread().getContextClassLoader().getResource(packagePath);
+            File packageDirectory = new File(packageURL.toURI());
+            File[] files = packageDirectory.listFiles();
+            
+            // Parcourez tous les fichiers
+            for (File file : files) {
+                // Vérifiez s'il s'agit d'un fichier .class
+                if (file.isFile() && file.getName().endsWith(".class")) {
+                    // Obtenez le nom de classe correspondant
+                    String className = packageName + '.' + file.getName().substring(0, file.getName().lastIndexOf('.'));
+                    
+                    // Chargez la classe correspondante
+                    Class<?> clazz = Class.forName(className);
+                    if( clazz.isAnnotationPresent(Scope.class) ){
+                        Scope scope = clazz.getAnnotation(Scope.class);
+                        if(scope.isSingleton()){
+                            singleton.put(className , clazz.newInstance());
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return singleton;
+    }
+
 // SPRINT-9: maka file
     public static Object recuperationFileData(Object object, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException, NoSuchMethodException, IllegalAccessException, InvocationTargetException{
         try {
             PrintWriter out = response.getWriter();
             String methodd = request.getMethod();
-            out.println("-----------FILE---------------");
             Collection<Part> parts = request.getParts();
             Field[] fields = object.getClass().getDeclaredFields();
             int size = parts.size();
@@ -133,7 +210,6 @@ public class Fonctions{
                 out.println("<br>");
                 if (field.getName().equals(paramName)) {
                     if (!field.getType().getName().equals("etu2003.framework.FileUpload")) {
-                        out.println("------------NON-FILE------------");
                         String methodName = "set" + capitalizeFirstLetter(field.getName());
                         Method method = object.getClass().getMethod(methodName, field.getType());
                         Object paramValue = request.getParameter(paramName);
@@ -171,7 +247,7 @@ public class Fonctions{
 
 // SPRINT 5: maka modelView anaovana dispatcher
     // recuperation valeur de retour et dispatcher
-    public static ModelView recup_ModelView(HashMap<String, Mapping> mappingUrls,HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public static ModelView recup_ModelView(HashMap<String, Mapping> mappingUrls,HashMap<String, Object> singleton, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out =response.getWriter();
         
@@ -193,10 +269,25 @@ public class Fonctions{
                 // out.println("tsy null tsony ilay mapping");
                 String nomMethode = cle;
                 String nomDeClasse = (String) mapping.getClassName();
-                java.lang.Class cl = java.lang.Class.forName(nomDeClasse);
-                Object object = cl.newInstance();
-                String method = (String) mapping.getMethod();
-                Method methode = obtenirMethode(object, method);
+                Method methode = null;
+                Object object = null;
+                String method = "";
+                
+                // SPRINT-10
+                if (singleton.containsKey(nomDeClasse)) {
+                    object = singleton.get(nomDeClasse);
+                    out.println("^^^^^^^^^^^^^^^^^^^Singleton^^^^^^^^^^^^^^^^^^^^");
+                    out.println("<br>");
+                }
+                else{
+                    java.lang.Class cl = java.lang.Class.forName(nomDeClasse);
+                    object = cl.newInstance();
+                    out.println("^^^^^^^^^^^^^^^^^^^TSY Singleton^^^^^^^^^^^^^^^^^^^^");
+                    out.println("<br>");
+                }
+                
+                method = (String) mapping.getMethod();
+                methode = obtenirMethode(object, method);
 
                 // ty niova sprint 8
                 
@@ -279,7 +370,7 @@ public class Fonctions{
         }
     }
 
-    public static Object getMyObject(HashMap<String, Mapping> mappingUrls, HttpServletRequest request, HttpServletResponse response) throws ClassNotFoundException, InstantiationException, IllegalAccessException{
+    public static Object getMyObject(HashMap<String, Mapping> mappingUrls, HashMap<String, Object> singleton, HttpServletRequest request, HttpServletResponse response) throws ClassNotFoundException, InstantiationException, IllegalAccessException, IOException{
         Object object = new Object();
 
         String stringUri = request.getRequestURI();
@@ -289,8 +380,10 @@ public class Fonctions{
         for(String keyMethod : mappingUrls.keySet()){
             Mapping mapping = mappingUrls.get(keyMethod);
             if (cleUrl.equals(keyMethod)) {
-                Class<?> myClass = Class.forName(mapping.getClassName());
-                object = myClass.newInstance();
+                
+                    Class<?> myClass = Class.forName(mapping.getClassName());
+                    object = myClass.newInstance();
+                
             }
         }
 
