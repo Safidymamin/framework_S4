@@ -14,7 +14,14 @@ import java.util.*;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
+import jakarta.servlet.annotation.MultipartConfig;
 
+@MultipartConfig(
+    location = "D:/",
+    fileSizeThreshold = 5 * 1024 * 1024,
+    maxFileSize = 10 * 1024 * 1024,
+    maxRequestSize = 20 * 1024 * 1024
+)
 public class FrontServlet extends HttpServlet{
 
     HashMap<String, Mapping> mappingUrls;
@@ -43,6 +50,8 @@ public class FrontServlet extends HttpServlet{
         
         try {
             Object myObject = Fonctions.getMyObject(mappingUrls, request, response);
+            // sprint 9: maka file
+            myObject = Fonctions.recuperationFileData(myObject, request, response);
             // sprint 7: maka données formulaire
             myObject = Fonctions.recuperationInputData(myObject, request, response);
             afficherDetailClass(myObject, out); 
@@ -99,7 +108,12 @@ public class FrontServlet extends HttpServlet{
             for (Field field : fields) {
                 field.setAccessible(true);
                 out.println("<br>");
-                out.println(field.getName()+" = "+(String)field.get(object));
+                try {
+                    out.println(field.getName()+" = "+(String)field.get(object));
+                    
+                } catch (Exception e) {
+                    // TODO: handle exception
+                }
             }
             out.println("<br>");
             out.println("Method.length: "+ methods.length);
