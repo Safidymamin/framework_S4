@@ -2,12 +2,21 @@ package models;
 
 import etu2003.annotation.url;
 import etu2003.framework.servlet.ModelView;
+import etu2003.framework.FileUpload;
 
 public class Emp{
     String nom;
     String prenom;
+    FileUpload file;
 
     public Emp(){
+    }
+    // sprint9: fileUpload
+    @url(value="emp-fileUpload")
+    public ModelView getFileUpload(){
+        ModelView modelView = new ModelView();
+        modelView.setUrl("fileUpload.jsp");
+        return modelView;
     }
 
     // sprint8: parametre fonction
@@ -36,8 +45,8 @@ public class Emp{
     public ModelView getDonnees(){
         ModelView modelView = new ModelView();
         modelView.setUrl("recupDonnee.jsp");
-        modelView.addItem("nom","Randriarimalala");
-        modelView.addItem("prenom","Anthony");
+        modelView.addItem("nom","RAkoto");
+        modelView.addItem("prenom","SAfidy");
         String nomComplet = this.nom +" "+ this.prenom;
         return modelView;
     }
@@ -58,10 +67,17 @@ public class Emp{
     public void setPrenom(String prenom) {
         this.prenom = prenom;
     }
+    public void setFile(FileUpload file) {
+        this.file = file;
+    }
     public String getNom() {
         return nom;
     }
     public String getPrenom() {
         return prenom;
     }
+    public FileUpload getFile() {
+        return file;
+    }
+    
 }

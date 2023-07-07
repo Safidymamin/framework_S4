@@ -8,7 +8,7 @@
 </head>
 <body>
     <h2>Index</h2>
-    <!-- <form action="servlet/emp-nomComplet">
+    <form action="servlet/emp-nomComplet">
         Sprint 5: <input type="submit" value="ModelView">
     </form>
     <form action="servlet/emp-recupDonnee">
@@ -16,9 +16,12 @@
     </form>
     <form action="servlet/emp-recupInputDonnee">
         Sprint 7: <input type="text" name="nom" placeholder="Nom..."><input type="text" name="prenom" placeholder="Prenom..."><input type="submit" value="Input Data In Class">
-    </form> -->
-    <form action="servlet/emp-parametre">
+    </form>
+    <form action="servlet/emp-parametre" method="post">
         Sprint 8: <input type="number" name="arg0" placeholder="Nombre boucle..."><input type="submit" value="Parametre">
+    </form>
+    <form action="servlet/emp-fileUpload" method="post" enctype="multipart/form-data">
+        Sprint 9: <input type="file" name="file"><input type="submit" value="Get file">
     </form>
 </body>
 </html>
